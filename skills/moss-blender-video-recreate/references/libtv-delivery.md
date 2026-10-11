@@ -44,7 +44,17 @@ libtv script storyboard "分镜表" -s aspectRatio=16:9
 libtv upload "镜头01-首帧" -t image --resource refs/shot01_first.png
 libtv upload "镜头01-尾帧" -t image --resource refs/shot01_last.png
 
-# 5) video 节点：prompt 取 prompts.md 该镜头段落，参考图连入，直接生成
+# 2) 关键帧风格化（关键步骤，不可跳过）
+#    frames2video/mixed2video 下参考图的外观权重远高于 prompt 文字；
+#    直接挂白模灰白帧会生成“白模风”成片。必须先用 image 节点把白模帧转成目标风格：
+libtv node create "镜头01-首帧-风格化" -t image \
+  --prompt "将参考图中的场景与人物转为写实风格：现代科研实验舱，穿浅蓝实验服的科研人员，深灰色金属控制装置，冷色调环境光。保持构图、人物姿态与空间关系不变。" \
+  --set "model=Seedream 4.0" --set ratio=16:9 --left "镜头01-首帧" --run
+libtv node create "镜头01-尾帧-风格化" -t image \
+  --prompt "同前风格：写实科研实验舱，人物面向装置抬手，装置环形灯带发出蓝色光晕。保持构图与姿态不变。" \
+  --set "model=Seedream 4.0" --set ratio=16:9 --left "镜头01-尾帧" --run
+
+# 5) video 节点：prompt 取 prompts.md 该镜头段落，挂风格化后的帧（非白模原始帧），直接生成
 libtv node create "镜头01" -t video \
   --prompt "<prompts.md 镜头01段落：外观+时间线+镜头约束>" \
   --set "model=Seedance 2.0" \
@@ -69,10 +79,16 @@ libtv node "成片合成" --run
 3. **生成等待**：`libtv node --run` 会随任务结束而退出，但进度要另查节点：`libtv node "<名>"` 读 `taskInfo.status`（1=进行中带 progressPercent，2=成功，3=失败）与 `url[]`（成品视频地址在节点顶层 `url` 字段，不在 `results`）。
 4. **低成本试水**：样片模式（如 `star-video2.5-draft`，480P）可先低成本验证动作，满意再直出高清。
 5. **成片验收方法**：`ffmpeg fps=3` 采样成片 → 逐帧差分看运动曲线（应与人工作业时序吻合、末段归零）→ 逐帧亮蓝像素检测蓝光出现时点。与白模触发时点偏差 1s 内可接受（弱约束）。
+6. **外观白模化检测（饱和度检查）**：成片若是灰白素模风，用饱和度指标判定——`整帧平均饱和度<10` 即为白模风污染（真实感画面通常 >40）。根因是参考图外观权重压过 prompt：必须走关键帧风格化步骤，白模原始帧禁止直接挂 video 节点。
 
 ## 分镜主导权约定（防两套分镜打架）
 
 **shot-plan.md 是唯一分镜源**。进 libtv 时用 `-u rows` 直接写入 shot-plan 的分镜内容，**不**让 script 节点的文本生成器重新产出一版分镜。`--run` 触发的文本生成仅在需要 libtv 补充旁白/对白等文本内容时使用。
+
+## 生成前自检（每次 --run 前）
+
+1. **提示词回读核对**：`libtv node "<节点名>"` 读回 `params.prompt`，与 prompts.md 对应段落核对一致后才触发生成。
+2. **参考图外观检查**：挂给 video 节点的首尾帧必须是风格化后的图；若为灰白素模帧，先走风格化步骤（见上方序列第 2 步），否则成片会复制白模外观。
 
 ## 交付与验收
 
