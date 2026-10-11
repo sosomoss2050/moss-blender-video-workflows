@@ -2,7 +2,17 @@
 
 所有显著变更记录在本文件。格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 SemVer。
 
+## [1.1.1] - 2026-10-11
+
+### Added
+- SKILL.md 新增 Step 0「项目目录初始化」（original/recreate 双 skill）：新建项目必须先建 `~/workspace-<agent>/projects/<项目名>/{tmp,outputs,refs}` 并 cd 进入，后续 Blender/libtv/ffmpeg 全部在该目录内执行；中间产物进 `tmp/`、成品进 `outputs/`；`MEDIA:` 只投 outputs 绝对路径并发后自查出站队列；收尾按前缀精确清理 tmp（禁全目录删除）
+- 背景：媒体产物散落 workspace 根目录、MEDIA 指令格式不达标导致投递静默失败（2026-10-11 排查，大壮2号定位）
+
+### Changed
+- 安装方式改为软链：`~/.openclaw/skills/moss-blender-video-*` → 本仓库 skills/ 目录，仓库即生效，无需双处同步
+
 ## [1.1.0] - 2026-10-11
+
 
 ### Added
 - **模板体系**（templates/）：shot-list 镜头表、character-lock 角色定妆照、storyboard-7seg 七段式分镜（original）；shot-decompose 镜头拆解、comparison 复刻比对（recreate）

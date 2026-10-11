@@ -14,6 +14,15 @@ description: 根据文字创意原创分镜，用 Blender 自动建场景、人�
 先检查 Blender、控制接口及视频服务可用性；缺失后半段服务不妨碍先完成白模与提示词，但必须报告缺口。运行模型由宿主决定，不声称 skill 自动启用了 GPT6 Astra。
 
 ## 执行
+0. **项目目录初始化（硬性第一步）**：在开始任何制作前，先建立并进入项目工作目录：
+   ```bash
+   mkdir -p ~/workspace-<agent>/projects/<项目名>/{tmp,outputs,refs}
+   cd ~/workspace-<agent>/projects/<项目名>
+   ```
+   - 后续所有操作（Blender 导出、libtv 命令、ffmpeg 编码）**必须在此目录内执行**，禁止在别处散落产物。
+   - 中间产物（原始下载、压缩副本、prompt/json、白模工程中间帧）放 `tmp/`（英文文件名）；最终交付成品放 `outputs/`。
+   - `MEDIA:` 投递只投 `outputs/` 内的绝对路径（顶格、独占一行、回复最后一行），发出后自查 `ls -lat ~/.openclaw/media/outbound/` 确认进入队列。
+   - 收尾：投递确认成功后，按文件名前缀精确清理本次 `tmp/` 中间文件（禁止 `rm -rf tmp/` 全目录）；`outputs/` 成品保留。
 1. 输出 shot-plan.md：创意一句话、场景布局、分秒动作、镜头路径、触发事件、结尾状态。动作数量必须适合时长；将原因安排在结果之前，并留出站稳和动作过渡时间。常规创意选择直接完成，不增加逐阶段审批。
    - **镜头表模板**：[templates/shot-list.md](templates/shot-list.md)（逐镜头景别/时长/运镜/在场角色/声音）。
    - **先给用户确认镜头表，再动手搭白模/生成参考图**，避免方向不符白做工。
