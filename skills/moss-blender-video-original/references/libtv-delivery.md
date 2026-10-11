@@ -5,7 +5,7 @@
 ## 能力边界（先读）
 
 - libtv 的 `video` 节点参考输入是**图片**（`mixed2video` 经 `--left` 挂 image 资源节点），**不接受视频参考**。白模 MP4 按镜头导出关键帧图挂参考（弱约束，交付时声明）。
-- 节点 `duration` 由模型 schema 决定（如 Seedance 2.0 的 5/10 秒档）。**shot-plan 阶段就把每镜头时长设计在可选档位上**，不事后凑。
+- 节点 `duration` 由模型 schema 决定：部分模型是连续滑条（如 Seedance 2.0 Mini 为 4–15s 整数步进），部分是离散档位。**用 `libtv model <modelKey>` 查实际 schema 后再定 shot-plan 时长**，不凭经验猜档位。
 - 提示词映射：prompts.md 的目标外观/动作时间线/镜头约束写进 `--prompt` 文本；libtv 无独立 negative prompt 字段，负面约束用文字表达，不编造参数。
 
 ## 全自动序列（用户零手动操作）
@@ -61,6 +61,14 @@ libtv node "成片合成" --run
 ```
 
 参数以 `libtv model search --type video` 与 `libtv model <modelKey>` 实际 schema 为准，不凭名称猜档位。
+
+## 实战经验（2026-10-11 首次端到端实弹验证）
+
+1. **CLI 安装位置**：CLI 装在 `~/.libtv/libtv`，不一定在 PATH 里。检测用 `which libtv || [ -x ~/.libtv/libtv ]`，后者直接用全路径调用。
+2. **`project create` 返回结构**：uuid 在 `projectMeta.uuid` 下，不在顶层；workspaceId 同理在 `folders[].id`。解析 stdout JSON 时按实际结构取。
+3. **生成等待**：`libtv node --run` 会随任务结束而退出，但进度要另查节点：`libtv node "<名>"` 读 `taskInfo.status`（1=进行中带 progressPercent，2=成功，3=失败）与 `url[]`（成品视频地址在节点顶层 `url` 字段，不在 `results`）。
+4. **低成本试水**：样片模式（如 `star-video2.5-draft`，480P）可先低成本验证动作，满意再直出高清。
+5. **成片验收方法**：`ffmpeg fps=3` 采样成片 → 逐帧差分看运动曲线（应与人工作业时序吻合、末段归零）→ 逐帧亮蓝像素检测蓝光出现时点。与白模触发时点偏差 1s 内可接受（弱约束）。
 
 ## 分镜主导权约定（防两套分镜打架）
 
