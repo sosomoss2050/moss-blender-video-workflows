@@ -1,30 +1,62 @@
-# Blender 视频工作流 Skills
+# moss-blender-video-workflows
 
-两套中文 Codex skills：参考视频复刻与文字创意原创。均采用「3D 灰白模动画 → 提示词 → 视频模型生成」流程。
+Moss 团队二开的古装/写实短视频生产工作流：**Blender 白模预演编排动作与镜头 → libtv 画布全自动生成带对白/音效的成片 → 配乐合成**。双 skill 结构，覆盖「参考视频复刻」与「文字创意原创」两类入口。
 
-| Skill | 输入 | 工作 |
+> Fork from [modengsir/blender-video-workflows](https://github.com/modengsir/blender-video-workflows) (MIT)。Moss 二开：skill 更名 `moss-*` 前缀，新增 libtv 交付路径集成、端到端生产 playbook 与 12 条实战护栏。
+
+## Skills
+
+| Skill | 输入 | 用途 |
 | --- | --- | --- |
-| blender-video-recreate | 可读取的参考视频 | 分镜分析、空间和动作复刻、白模验收、风格化生成 |
-| blender-video-original | 文字创意 | 原创分镜、场景和人物动画、白模验收、风格化生成 |
+| `skills/moss-blender-video-recreate` | 参考视频 | 复刻原片构图/动作/运镜 → 白模 → 成片 |
+| `skills/moss-blender-video-original` | 文字创意 | 原创分镜 → 白模 → 成片 |
+
+两个 skill 共享同一套 references：Blender 制作验收、视频生成、**libtv 交付路径**。
+
+## 核心流程
+
+```
+shot-plan.md（台词时长对齐分镜）
+→ Blender 白模（竖屏/横屏，低清预览 + 逐段像素验收）
+→ 白模关键帧导出 → 关键帧风格化（图生图，防白模外观污染）
+→ libtv 画布自动创建绑定 → video 节点（音画同步，对白入 prompt）
+→ audio 节点配乐（scene=Music）→ video-clip / ffmpeg 合成
+```
 
 ## 安装
-将 skills 下需要的文件夹复制到 Codex 的 skills 目录（通常是 ~/.codex/skills；设置了 CODEX_HOME 时使用其 skills 子目录），然后新建任务使其被发现。两个文件夹可独立安装，均包含自己的参考文档。
+
+将 `skills/moss-blender-video-recreate`、`skills/moss-blender-video-original` 复制到 OpenClaw 的 skills 目录（通常 `~/.openclaw/skills/`），重载 skills 即可被自动发现。
+
+## 依赖
+
+| 依赖 | 用途 | 备注 |
+| --- | --- | --- |
+| Blender ≥ 4.x（验证于 5.2 LTS） | 白模建模/渲染 | `blender -b --python` 无头批处理 |
+| FFmpeg / ffprobe | 关键帧导出、编码、合成 | 8.x 验证 |
+| libtv CLI ≥ 1.1 | 画布全自动操作 | 安装见 `~/.libtv`；不在 PATH 时用全路径 |
+| libtv 账号 | 画布云服务 | 视频生成按积分计价，样片模式低成本 |
 
 ## 使用
-- 复刻：「使用 $blender-video-recreate，复刻我上传视频的动作与运镜，先做灰白模，再生成写实科幻视频。」
-- 原创：「使用 $blender-video-original，做 8 秒实验舱视频：科研人员走入、站稳、抬手，装置蓝光亮起；1080p、24fps，镜头缓推，最后定格。自动完成白模和后续生成。」
 
-## 环境
-需要可用的 Blender 与控制方式；界面操作需 Computer Use 权限，批处理可使用 Blender Python。视频探测和转码可使用 FFmpeg/ffprobe 或等效工具。最终风格化需要支持相应输入的视频生成服务和用户授权，可能产生服务费用。未配置服务时交付白模、工程和提示词，不能假称完成生成。
+一句话任务（参数可全部自动推进）：
 
-“GPT6 Codex”和“GPT6 Astra Codex”是用户规划的运行组合名称，skill 本身不提供模型、切换模型或保证特定模型可用。无需购买固定插件，代理根据已安装工具选择执行接口。
+> 使用 $moss-blender-video-original，做 10 秒实验舱视频：科研人员走入、站稳、抬手，装置蓝光亮起。16:9、720p。
 
-## 交付与验证
-每次运行交付镜头表、.blend、白模 MP4、提示词、验收记录，以及服务可用时的生成视频。重点检查对侧摆臂、滑步、穿模、触发顺序和镜头平稳。
-本包是工作流指令，不含 Blender 插件或预置视频模型。结构验证通过不等于所有外部工具组合均通过端到端实测，具体状态见 VALIDATION.md。
+批量短剧模式（多镜头+对白+配乐）见 [PLAYBOOK.md](PLAYBOOK.md)，含五阶段质检表与命令序列。
 
-## 来源
-按本次用户明确给出的两条工作流独立编写。未取得链接文章完整正文，不宣称逐条还原作者教程，不包含文章转载内容。
+## 重要护栏（实战沉淀，详见 references/libtv-delivery.md）
 
-## 许可
-本仓库原创 skill 文档以 MIT 许可发布，见 LICENSE。参考视频、模型服务和第三方工具遵循各自许可；不包含在本仓库的授权范围内。
+1. 白模原始帧**禁止**直接挂 video 节点——参考图外观权重压过 prompt，必须先风格化（饱和度自检 >40）
+2. duration 各模型上下限不同，建节点前先 `libtv model <modelKey>` 查 schema
+3. audio 节点选音乐模型必须 `--set scene=Music`
+4. 样片模式（480P）时序服从度弱，只验外观与动作结构
+5. 尾帧避免带发光终态，防止触发时序被"匀速回放"带偏
+
+## 验证状态
+
+- 端到端实弹验证 ×2：实验舱 10s 单镜头（720p 成片）、雨中归坊 22s 五镜头带对白配乐（样片版成片）
+- 验收方法与记录样例见交付目录 ACCEPTANCE.md 模板
+
+## License
+
+MIT（继承上游）；参考视频、模型服务遵循各自许可。
