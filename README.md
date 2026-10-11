@@ -1,8 +1,6 @@
 # moss-blender-video-workflows
 
-Moss 团队二开的古装/写实短视频生产工作流：**Blender 白模预演编排动作与镜头 → libtv 画布全自动生成带对白/音效的成片 → 配乐合成**。双 skill 结构，覆盖「参考视频复刻」与「文字创意原创」两类入口。
-
-> Fork from [modengsir/blender-video-workflows](https://github.com/modengsir/blender-video-workflows) (MIT)。Moss 二开：skill 更名 `moss-*` 前缀，新增 libtv 交付路径集成、端到端生产 playbook 与 12 条实战护栏。
+古装/写实短视频生产工作流：**Blender 白模预演编排动作与镜头 → libtv 画布全自动生成带对白/音效的成片 → 配乐合成**。双 skill 结构，覆盖「参考视频复刻」与「文字创意原创」两类入口。
 
 ## Skills
 
@@ -51,11 +49,18 @@ shot-plan.md（台词时长对齐分镜）
 3. audio 节点选音乐模型必须 `--set scene=Music`
 4. 样片模式（480P）时序服从度弱，只验外观与动作结构
 5. 尾帧避免带发光终态，防止触发时序被"匀速回放"带偏
+6. 多镜头同场景优先单节点一次提交（七段式 Storyboard，实测切点偏差 ≤0.67s）
+7. 每个镜头写明全部在场角色及站位，防止角色凭空出现或人数多生成
 
 ## 验证状态
 
 - 端到端实弹验证 ×2：实验舱 10s 单镜头（720p 成片）、雨中归坊 22s 五镜头带对白配乐（样片版成片）
 - 验收方法与记录样例见交付目录 ACCEPTANCE.md 模板
+
+## 鸣谢
+
+- 感谢 [modengsir](https://github.com/modengsir) 的开源项目 [blender-video-workflows](https://github.com/modengsir/blender-video-workflows)（MIT 许可）——本项目在其「Blender 白模 → 提示词 → AI 视频生成」工作流基础上二次开发而来：skill 更名 `moss-*` 前缀、集成 libtv 交付路径、新增端到端生产 playbook 与实战护栏。
+- 感谢胡图图（内容制作部）的实测反馈与增强——v1.1.0 的模板体系与声音三件套铁律均来自一线生产验证。
 
 ## License
 
