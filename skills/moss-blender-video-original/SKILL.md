@@ -1,7 +1,9 @@
 ---
-name: blender-video-original
+name: moss-blender-video-original
 description: 根据文字创意原创分镜，用 Blender 自动建场景、人物和动画，导出白模视频与提示词，再通过可用视频模型生成成片。用于无参考视频的原创视频制作。
 ---
+
+> Fork from [modengsir/blender-video-workflows](https://github.com/modengsir/blender-video-workflows) (MIT)。Moss 团队二开：skill 更名 moss-* 前缀，新增 libtv 交付路径集成。
 
 # 原创白模视频工作流
 
@@ -16,7 +18,7 @@ description: 根据文字创意原创分镜，用 Blender 自动建场景、人�
 2. 阅读 [Blender 制作与验收](references/blender-production.md)。先搭地面、墙体、入口、主要设备和人物占位体，检查通行宽度、相机可见性和手可触及范围，再做人物关节与动画。
 3. 先调根节点行走与停步，再添加对侧摆臂、抬手与装置反馈，最后调整相机。若行走与交互手势重叠，分离控制并平滑混合，避免抬手破坏整个步态。
 4. 做完整低成本预览，检查相位、脚底滑动、穿模、手部接触、镜头抖动及末尾稳定状态。修复后再正式渲染和编码，保存可编辑工程及验收记录。
-5. 阅读 [视频生成](references/video-generation.md)，将白模动作时间线写入提示词，补充最终外观，并通过可用且获授权的视频模型生成新视频。
+5. 阅读 [视频生成](references/video-generation.md)，将白模动作时间线写入提示词，补充最终外观，并通过可用且获授权的视频模型生成新视频。本机可用 libtv CLI 时改走 [libtv 交付路径](references/libtv-delivery.md)，白模关键帧挂参考图、经 libtv 画布生成。
 6. 检查最终视频与白模的动作和镜头一致性，再分别交付。只完成白模时不得把它称为模型生成的最终成片。
 
 ## 8 秒实验舱示例
