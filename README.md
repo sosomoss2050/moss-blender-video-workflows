@@ -11,7 +11,7 @@ Moss 团队二开的古装/写实短视频生产工作流：**Blender 白模预�
 | `skills/moss-blender-video-recreate` | 参考视频 | 复刻原片构图/动作/运镜 → 白模 → 成片 |
 | `skills/moss-blender-video-original` | 文字创意 | 原创分镜 → 白模 → 成片 |
 
-两个 skill 共享同一套 references：Blender 制作验收、视频生成、**libtv 交付路径**。
+两个 skill 共享同一套 references：Blender 制作验收、视频生成、**libtv 交付路径**；并自带 `templates/` 模板体系（镜头表、角色定妆照、七段式分镜、镜头拆解、复刻比对）。
 
 ## 核心流程
 
