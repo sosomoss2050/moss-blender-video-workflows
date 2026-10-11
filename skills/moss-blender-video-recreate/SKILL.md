@@ -15,11 +15,15 @@ description: 将参考视频拆成镜头和动作，用 Blender 复刻三维灰�
 
 ## 执行
 1. 探测实际时长、帧率、尺寸，提取各镜头首尾帧、动作关键帧与必要中间帧。输出 shot-plan.md：时间范围、构图、主体比例、地面和设备布局、人物朝向、动作接触点、相机运动。区分观察事实和遮挡区域的估计。
+   - **镜头拆解表模板**：[templates/shot-decompose.md](templates/shot-decompose.md)（逐镜头记录原片事实 vs 估计，供白模复刻与生成对照）。
 2. 用可见物体比例和透视估计空间尺度、焦距与机位。先匹配画幅及关键帧轮廓，再调运动。单目视频无法唯一恢复深度，隐藏结构只建立足够支撑画面的简模，不宣称精确重建。
 3. 阅读 [Blender 制作与验收](references/blender-production.md)，搭建场景并还原运动。用户要求简化时保留动作和镜头节奏，减少装饰。
 4. 将白模与原片关键时刻并排比较：主体屏幕位置、大小、运动方向、事件时刻和接触关系。定位偏差后修正，保存 comparison.md；不得用“风格不同”掩盖构图或时序错误。
 5. 阅读 [视频生成](references/video-generation.md)，写提示词，使用可用且获授权的视频模型完成风格化生成。本机可用 libtv CLI 时改走 [libtv 交付路径](references/libtv-delivery.md)，白模关键帧挂参考图、经 libtv 画布生成。
 6. 按实际结果交付文件和验证状态；视频模型输出仍需检查动作，不将白模验收结论套用到生成视频。
+   - **多镜头同场景可一次提交**（单节点多镜头硬切）：复刻得到的镜头表可套用七段式结构，模板见 [`moss-blender-video-original/templates/storyboard-7seg.md`](../moss-blender-video-original/templates/storyboard-7seg.md)。
+   - **复刻比对记录**：[templates/comparison.md](templates/comparison.md)，逐关键时刻记录白模 vs 原片的屏幕位置/大小/方向/时刻。
+   - **参考图/场景锁定**：走 libtv 时同 `moss-blender-video-original/templates/character-lock.md`。
 
 ## 执行边界
 “零门槛”表示由代理承担操作与排错，不要求用户自己建模、绑骨或运行代码。必要的输入、权限和服务费用仍以真实环境为准。模型名称是运行环境选择，本 skill 不切换或伪装当前模型。用户只要求白模或提示词时到该阶段停止。
